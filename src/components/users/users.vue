@@ -9,10 +9,10 @@
     <!-- 2.搜索框 -->
     <el-row class="searchRow">
         <el-col :span="16">
-            <el-input placeholder="请输入用户名" v-model="query" class="searchInput" clearable >
+            <el-input placeholder="请输入用户名" v-model="query" class="searchInput" clearable @click="loadUserList()">
                 <el-button slot="append" icon="el-icon-search" @click="searchUser()"></el-button>
             </el-input>
-            <el-button type="primary">添加用户</el-button>
+            <el-button type="primary" @click="showAddUserdia()">添加用户</el-button>
         </el-col>
     </el-row>
     <!-- 3.表格 -->
@@ -55,6 +55,29 @@
     layout="total, sizes, prev, pager, next, jumper" 
     :total="total">
     </el-pagination>
+
+
+    <!-- 添加用户的对话框 -->
+    <el-dialog title="添加用户" :visible.sync="dialogFormVisible">
+        <el-form :model="form">
+            <el-form-item label="用户名称" :label-width="formLabelWidth">
+            <el-input v-model="form.username" autocomplete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="密码" :label-width="formLabelWidth">
+            <el-input v-model="form.password" autocomplete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="邮箱" :label-width="formLabelWidth">
+            <el-input v-model="form.email" autocomplete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="电话" :label-width="formLabelWidth">
+            <el-input v-model="form.mobile" autocomplete="off"></el-input>
+            </el-form-item>    
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+            <el-button @click="dialogFormVisible = false">取 消</el-button>
+            <el-button type="primary" @click="addUser()">确 定</el-button>
+        </div>
+    </el-dialog>
 </el-card>
 </template>
 
@@ -83,13 +106,50 @@ export default {
             //截取用户数据请求的参数
             pagenum: 1,
             pagesize: 2,
-            total: -1
+            total: -1,
+            //对话框  添加对话框
+            dialogFormVisible:false,
+            formLabelWidth:'100px',
+            //用户的表单数据
+            form:{
+                username:'',
+                password:'',
+                email:'',
+                mobile:''
+            }
         }
     },
     created() {
         this.getUserList()
     },
     methods: {
+        //点击确定添加用户
+        async addUser () {
+           const res =await this.$http.post('users',this.form)
+           const {
+               meta:{status,msg},
+               data
+           }=res.data
+           if(status===201){
+               //关闭对话框
+               this.dialogFormVisible=false
+               //提示成功
+               this.$message.success(msg)
+               //更新视图
+               this.getUserList()
+           }else{
+               this.$message.warning(msg)
+           }
+           this.form={}
+        },
+        //点击添加用户按钮  弹出对话框
+        showAddUserdia () {
+            this.dialogFormVisible=true
+        },
+        //清除搜索框触发事件
+        loadUserList () {
+            this.getUserList()
+        },
         //用户名搜索
         searchUser () {
             this.pagenum=1;
