@@ -47,6 +47,14 @@
         </el-table-column>
     </el-table>
     <!-- 4.分页 -->
+    <el-pagination @size-change="handleSizeChange" 
+    @current-change="handleCurrentChange" 
+    :current-page="pagenum" 
+    :page-sizes="[2, 4, 6, 8]" 
+    :page-size="2" 
+    layout="total, sizes, prev, pager, next, jumper" 
+    :total="total">
+    </el-pagination>
 </el-card>
 </template>
 
@@ -73,17 +81,26 @@ export default {
                 username: ""
             }],
             //截取用户数据请求的参数
-            pagenum: '1',
-            pagesize: '2',
-            total: '-1'
+            pagenum: 1,
+            pagesize: 2,
+            total: -1
         }
     },
     created() {
         this.getUserList()
     },
     methods: {
+        //分页
+        //每个的条数改变
+        handleSizeChange (val) {
+            console.log(`每页 ${val} 条`);
+        },
+        //当前页码改变
+        handleCurrentChange (val) {
+            console.log(`当前页: ${val}`);
+        },
         //获取用户列表数据
-        async getUserList() {
+        async getUserList () {
             //授权api 设置请求头
             const AUTH_TOKEN = localStorage.getItem('token')
             this.$http.defaults.headers.common['Authorization'] = AUTH_TOKEN;
