@@ -9,8 +9,8 @@
     <!-- 2.搜索框 -->
     <el-row class="searchRow">
         <el-col :span="16">
-            <el-input placeholder="请输入用户名" v-model="query" class="searchInput">
-                <el-button slot="append" icon="el-icon-search"></el-button>
+            <el-input placeholder="请输入用户名" v-model="query" class="searchInput" clearable >
+                <el-button slot="append" icon="el-icon-search" @click="searchUser()"></el-button>
             </el-input>
             <el-button type="primary">添加用户</el-button>
         </el-col>
@@ -90,6 +90,11 @@ export default {
         this.getUserList()
     },
     methods: {
+        //用户名搜索
+        searchUser () {
+            this.pagenum=1;
+            this.getUserList();
+        },
         //分页
         //每个的条数改变
         handleSizeChange (val) {
