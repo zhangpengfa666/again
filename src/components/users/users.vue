@@ -16,17 +16,78 @@
         </el-col>
     </el-row>
     <!-- 3.表格 -->
-
+    <el-table :data="tableData" border style="width: 100%">
+        <el-table-column type="index" label="#" width="80">
+        </el-table-column>
+        <el-table-column prop="username" label="姓名" width="100">
+        </el-table-column>
+        <el-table-column prop="email" label="邮箱">
+        </el-table-column>
+        <el-table-column prop="mobile" label="电话">
+        </el-table-column>
+        <el-table-column prop="create_time" label="创建日期">
+        </el-table-column>
+        <el-table-column prop="mg_state" label="用户状态">
+        </el-table-column>
+        <el-table-column  label="操作">
+        </el-table-column>
+    </el-table>
     <!-- 4.分页 -->
-
 </el-card>
 </template>
 
 <script>
 export default {
-    data () {
+    data() {
         return {
-            query:''
+            query: '',
+            //提供table要渲染的数据
+            // create_time: 1486720211
+            // email: "adsfad@qq.com"
+            // id: 500
+            // mg_state: true
+            // mobile: "12345678"
+            // role_name: "主管"
+            // username: "admin"
+            tableData: [{
+                create_time:'',
+                email: "",
+                id: '',
+                mg_state: '',
+                mobile: "",
+                role_name: "",
+                username: ""
+            }],
+            //截取用户数据请求的参数
+            pagenum: '1',
+            pagesize: '2',
+            total: '-1'
+        }
+    },
+    created() {
+        this.getUserList()
+    },
+    methods: {
+        //获取用户列表数据
+        async getUserList() {
+            //授权api 设置请求头
+            const AUTH_TOKEN = localStorage.getItem('token')
+            this.$http.defaults.headers.common['Authorization'] = AUTH_TOKEN;
+            const res = await this.$http.get(`users?query=${this.query}&pagenum=${this.pagenum}&pagesize=${this.pagesize}`)
+            console.log(res)
+            const {
+                meta: {msg,status},
+                data:{total,users}
+            }=res.data
+
+            if(status===200){
+                this.total=total
+                this.tableData=users
+                this.$message.success(msg)
+            }else{
+                this.$message.warning(msg)
+            }
+
         }
     }
 }
@@ -36,10 +97,12 @@ export default {
 .box-card {
     height: 100%;
 }
-.searchRow{
+
+.searchRow {
     margin-top: 20px;
 }
-.searchInput{
+
+.searchInput {
     width: 300px;
 }
 </style>
