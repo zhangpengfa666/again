@@ -25,11 +25,25 @@
         </el-table-column>
         <el-table-column prop="mobile" label="电话">
         </el-table-column>
-        <el-table-column prop="create_time" label="创建日期">
+        <!-- fmtdate -->
+        <el-table-column label="创建日期">
+            <template slot-scope="scope">
+                {{scope.row.create_time|fmtdate}}
+            </template>
         </el-table-column>
-        <el-table-column prop="mg_state" label="用户状态">
+
+        <el-table-column label="用户状态">
+            <template slot-scope="scope">
+                <el-switch v-model="scope.row.mg_state" active-color="#13ce66" inactive-color="#ff4949">
+                </el-switch>
+            </template>
         </el-table-column>
-        <el-table-column  label="操作">
+        <el-table-column label="操作">
+            <template slot-scope="scope">
+                <el-button size="mini" plain type="primary" icon="el-icon-edit" circle></el-button>
+                <el-button size="mini" plain type="success" icon="el-icon-check" circle></el-button>
+                <el-button size="mini" plain type="danger" icon="el-icon-delete" circle></el-button>
+            </template>
         </el-table-column>
     </el-table>
     <!-- 4.分页 -->
@@ -50,7 +64,7 @@ export default {
             // role_name: "主管"
             // username: "admin"
             tableData: [{
-                create_time:'',
+                create_time: '',
                 email: "",
                 id: '',
                 mg_state: '',
@@ -76,15 +90,21 @@ export default {
             const res = await this.$http.get(`users?query=${this.query}&pagenum=${this.pagenum}&pagesize=${this.pagesize}`)
             console.log(res)
             const {
-                meta: {msg,status},
-                data:{total,users}
-            }=res.data
+                meta: {
+                    msg,
+                    status
+                },
+                data: {
+                    total,
+                    users
+                }
+            } = res.data
 
-            if(status===200){
-                this.total=total
-                this.tableData=users
+            if (status === 200) {
+                this.total = total
+                this.tableData = users
                 this.$message.success(msg)
-            }else{
+            } else {
                 this.$message.warning(msg)
             }
 
