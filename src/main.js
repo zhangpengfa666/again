@@ -7,12 +7,14 @@ import 'element-ui/lib/theme-chalk/index.css'
 import App from './App'
 import MyPlugin from '@/assets/plugins/http.js'
 import '@/assets/css/index.css'
+import myBread from '@/components/coucom/myBread.vue'
 
 import router from './router'
 Vue.use(ElementUI)
 Vue.use(MyPlugin)
 Vue.config.productionTip = false
-
+/* */
+Vue.component(myBread.name, myBread)
 /* 全局过滤器 - 处理日期格式 */
 Vue.filter('fmtdate', (v) => {
   return moment(v).format('YYYY-MM-DD')
