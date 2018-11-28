@@ -34,13 +34,17 @@
 
         <el-table-column label="用户状态">
             <template slot-scope="scope">
-                <el-switch v-model="scope.row.mg_state" active-color="#13ce66" inactive-color="#ff4949">
+                <el-switch 
+                @change="editUserStatus(scope.row)"
+                v-model="scope.row.mg_state" 
+                active-color="#13ce66" 
+                inactive-color="#ff4949">
                 </el-switch>
             </template>
         </el-table-column>
         <el-table-column label="操作">
             <template slot-scope="scope">
-                <el-button size="mini" plain type="primary" icon="el-icon-edit" circle @click="editUser(scope.row.id)"></el-button>
+                <el-button size="mini" plain type="primary" icon="el-icon-edit" circle @click="showEditUser(scope.row)"></el-button>
                 <el-button size="mini" plain type="success" icon="el-icon-check" circle></el-button>
                 <el-button size="mini" plain type="danger" icon="el-icon-delete" circle @click="deleteUser(scope.row.id)"></el-button>
             </template>
@@ -83,7 +87,7 @@
     <el-dialog title="添加用户" :visible.sync="dialogFormVisibleEdit">
         <el-form :model="form">
             <el-form-item label="用户名称" :label-width="formLabelWidth">
-            <el-input v-model="form.username" autocomplete="off"></el-input>
+            <el-input v-model="form.username" autocomplete="off" disabled></el-input>
             </el-form-item>
             <el-form-item label="邮箱" :label-width="formLabelWidth">
             <el-input v-model="form.email" autocomplete="off"></el-input>
@@ -143,8 +147,22 @@ export default {
         this.getUserList()
     },
     methods: {
-        //点击编辑用户按钮  弹出对话框
-        editUser () {
+        //修改用户状态
+        async editUserStatus (user) {
+            const res = await this.$http.put(`users/${user.id}/state/${user.mg_state}`)
+        },
+        // 编辑用户发送请求
+        async editUser () {
+            const AUTH_TOKEN = localStorage.getItem('token')
+            this.$http.defaults.headers.common['Authorization'] = AUTH_TOKEN; 
+            const res = await this.$http.put(`users/${this.form.id}`,this.form)
+            this.dialogFormVisibleEdit=false
+            this.getUserList()
+            this.$message.success(res.data.meta.msg)
+        },
+        // 点击编辑用户按钮  弹出对话框
+        showEditUser (user) {
+            this.form=user
             this.dialogFormVisibleEdit=true
         },
         //删除用户
@@ -190,6 +208,7 @@ export default {
         },
         //点击添加用户按钮  弹出对话框
         showAddUserdia () {
+            this.form = {}
             this.dialogFormVisible=true
         },
         //清除搜索框触发事件
@@ -233,7 +252,6 @@ export default {
                     users
                 }
             } = res.data
-
             if (status === 200) {
                 this.total = total
                 this.tableData = users
