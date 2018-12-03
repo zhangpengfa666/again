@@ -68,7 +68,7 @@ export default {
         //获取侧边栏导航
         async getMeaus () {
             const res = await this.$http.get(`menus`)
-            console.log(res)
+            // console.log(res)
             this.meaus=res.data.data
         },
         loginout(){
